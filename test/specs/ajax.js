@@ -390,4 +390,26 @@ describe("Ajax", function(){
     user.scope = function() { return "/roots/" + this.id; };
     expect(Spine.Ajax.getCollectionURL(user)).toBe('/roots/1/users');
   });
+
+  it("should dequeue custom ajax requests", function(){
+    var finished = false;
+    runs(function(){
+      Spine.Ajax.queue(function(){
+        jQuery.ajax({
+          type: 'GET',
+          complete: function() {
+            finished = true;
+          },
+          url: '/'
+        });
+      });
+      expect(Spine.Ajax.queue().length).toBe(1);
+    });
+    waits(500);
+    runs(function(){
+      if( finished )
+        expect(Spine.Ajax.queue().length).toBe(0);
+    });
+
+  });
 });
